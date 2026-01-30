@@ -1,9 +1,9 @@
-curl -v http://0.0.0.0:8012/v1/chat/completions \
+curl -v http://0.0.0.0:8000/v1/chat/completions \
 	-H 'Content-Type: application/json' \
 	-d \
 	'{ "model": "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite",
 "messages": [
-          {"role": "user", "content": "Hi, how are you"}
+          {"role": "user", "content": "What is the capital of France?"}
 	  ],
 	  "temperature": 0.6,
 	  "repetition_penalty": 1.0,

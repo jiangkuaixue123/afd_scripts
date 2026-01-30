@@ -1,3 +1,3 @@
 #!/bin/bash
 #
-curl http://localhost:8012/stop_profile -X POST
+curl http://localhost:8000/stop_profile -X POST
