@@ -15,6 +15,7 @@ vllm bench serve \
  --endpoint /v1/completions \
  --dataset-name random \
  --random-input-len 2 \
+ --port 8022 \
  --random-output-len 100 \
  --max-concurrency 512 \
  --num-prompts 10000
