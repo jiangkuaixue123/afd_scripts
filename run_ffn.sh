@@ -10,6 +10,8 @@
 
 
 export CUDA_VISIBLE_DEVICES=$1
+export NCCL_DEBUG=TRACE
+export CUDA_LAUNCH_BLOCKING=1
 vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     -dp=2 \
     --enable_expert_parallel \

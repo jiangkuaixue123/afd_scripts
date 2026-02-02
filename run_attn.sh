@@ -14,6 +14,8 @@ export VLLM_TORCH_PROFILER_WITH_STACK=0
 #      --enforce_eager \
 #      --enable-dbo --dbo-prefill-token-threshold 12 --dbo-decode-token-threshold 2 \
 #      --afd-config '{"afd_connector":"p2pconnector", "afd_role": "attention", "afd_host":"127.0.0.1", "afd_port":"29510","num_afd_stages":"2","afd_extra_config":{"afd_size":"4A4F"}}' > attn.log 2>&1 &
+export NCCL_DEBUG=TRACE
+export CUDA_LAUNCH_BLOCKING=1
 
 vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --data-parallel-size=2 \
