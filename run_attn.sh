@@ -22,18 +22,38 @@ export VLLM_TORCH_PROFILER_WITH_STACK=0
 # export NCCL_DEBUG_FILE=nccl_rank_attn_%h_%p.log
 # export NCCL_DEBUG_TIMESTAMP=1
 
+# vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
+#     --max-num-batched-tokens 72 \
+#     --data-parallel-size=2 \
+#     --enable_expert_parallel \
+#     --enable-dbo \
+#     --enforce_eager \
+#     --dbo-prefill-token-threshold 12 \
+#     --dbo-decode-token-threshold 2 \
+#     --port 8022 \
+#     --compilation-config '{
+# 		"cudagraph_mode": "FULL_DECODE_ONLY",
+# 		"cudagraph_capture_sizes": [72]
+# 	}' \
+#     --afd-config '{
+#         "afd_connector":"p2pconnector",
+#         "afd_role": "attention",
+#         "afd_host":"127.0.0.1",
+#         "afd_port":"29521",
+#         "num_afd_stages":"2",
+#         "afd_extra_config":{
+#             "afd_size":"2A2F"
+#         }
+#     }' > attn.log 2>&1 &
+
 vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
-    --max-num-batched-tokens 72 \
     --data-parallel-size=2 \
     --enable_expert_parallel \
     --enable-dbo \
+    --enforce_eager \
     --dbo-prefill-token-threshold 12 \
     --dbo-decode-token-threshold 2 \
     --port 8022 \
-    --compilation-config '{
-		"cudagraph_mode": "FULL_DECODE_ONLY",
-		"cudagraph_capture_sizes": [72]
-	}' \
     --afd-config '{
         "afd_connector":"p2pconnector",
         "afd_role": "attention",
@@ -44,21 +64,3 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
             "afd_size":"2A2F"
         }
     }' > attn.log 2>&1 &
-
-# export NCCL_DEBUG=WARN
-# vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
-#     --enable_expert_parallel \
-#     --enforce_eager \
-#     --enable-dbo \
-#     --dbo-prefill-token-threshold 12 \
-#     --dbo-decode-token-threshold 2 \
-#     --afd-config '{
-#         "afd_connector":"p2pconnector",
-#         "afd_role": "attention",
-#         "afd_host":"127.0.0.1",
-#         "afd_port":"29510",
-#         "num_afd_stages":"1",
-#         "afd_extra_config":{
-#             "afd_size":"1A1F"
-#         }
-#     }' > attn.log 2>&1 &
