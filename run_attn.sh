@@ -43,7 +43,7 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --afd-config '{
         "afd_connector":"p2pconnector",
         "afd_role": "attention",
-        "afd_host":"127.0.0.1",
+        "afd_host":"10.248.12.106",
         "afd_port":"29521",
         "num_afd_stages":"2",
         "afd_extra_config":{

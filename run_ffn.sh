@@ -15,7 +15,7 @@ export CUDA_VISIBLE_DEVICES=$1
 # export NCCL_DEBUG_FILE=nccl_rank_ffn_%h_%p.log
 # export NCCL_DEBUG_TIMESTAMP=1
     # --enforce_eager \
-export TORCH_LOGS="+dynamo"
+# export TORCH_LOGS="+dynamo"
 
 vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     -dp=2 \
@@ -31,7 +31,7 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
         "afd_connector":"p2pconnector",
         "num_afd_stages":"2",
         "afd_role": "ffn",
-        "afd_host":"127.0.0.1",
+        "afd_host":"10.248.12.106",
         "afd_port":"29521",
         "afd_extra_config":{
             "afd_size":"2A2F"
