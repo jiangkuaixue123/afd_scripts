@@ -4,17 +4,8 @@ export CUDA_VISIBLE_DEVICES=$1
 export VLLM_TORCH_PROFILER_DIR=./vllm_profile_afd
 export VLLM_TORCH_PROFILER_WITH_STACK=0
 # export CUDA_LAUNCH_BLOCKING=1
-export VLLM_LOGGING_LEVEL=DEBUG
-# export GLOO_DEBUG=1
-# export TORCH_DISTRIBUTED_DEBUG=DETAIL
-# export GLOO_TIMEOUT_SECS=10
-# export TORCH_CPP_LOG_LEVEL=INFO
-# vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
-#      --data_parallel_size=4 \
-#      --enable_expert_parallel \
-#      --enforce_eager \
-#      --enable-dbo --dbo-prefill-token-threshold 12 --dbo-decode-token-threshold 2 \
-#      --afd-config '{"afd_connector":"p2pconnector", "afd_role": "attention", "afd_host":"127.0.0.1", "afd_port":"29510","num_afd_stages":"2","afd_extra_config":{"afd_size":"4A4F"}}' > attn.log 2>&1 &
+# export VLLM_LOGGING_LEVEL=DEBUG
+
 export NCCL_DEBUG=TRACE
 export NCCL_DEBUG_SUBSYS=ALL
 # 使用 %h (hostname) 和 %p (pid) 来区分不同进程的日志
@@ -27,14 +18,18 @@ rm -rf ~/.cache/vllm/
 # -cc.cudagraph_mode=NONE \
 # -cc.mode=0 \
 
-        # "afd_host":"10.248.12.106",
-    #     --compilation-config '{
-	# 	"cudagraph_mode": "FULL_DECODE_ONLY",
-	# 	"cudagraph_capture_sizes": [256]
-	# }' \
+# export NCCL_MAX_NCHANNEL=64
+# export NCCL_BUFFSIZE=16777216
+export BATCH_SIZE=${2:-64}
+export VLLM_NCCL_SO_PATH=/home/fq9hpsac/fq9hpsacuser03/sources/nccl/build/lib/libnccl.so.2.29.3
+export NCCL_GRAPH_MIXING_SUPPORT=1
+# export NCCL_P2P_NET_CHUNKSIZE=262144
+export NCCL_P2P_NET_CHUNKSIZE=524288
+# export CUDA_LAUNCH_BLOCKING=1
+export NCCL_NET_PLUGIN=none
 
 vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
-    --max-num-batched-tokens 256 \
+    --max-num-batched-tokens $BATCH_SIZE \
     --data-parallel-size=2 \
     --enable_expert_parallel \
     --enable-dbo \
@@ -44,7 +39,7 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --no-enable-prefix-caching \
     --compilation-config '{
 		"cudagraph_mode": "FULL_DECODE_ONLY",
-		"cudagraph_capture_sizes": [256]
+		"cudagraph_capture_sizes": ['$BATCH_SIZE']
 	}' \
     --kv-transfer-config '{
         "kv_connector": "MooncakeConnector",
