@@ -1,3 +1,3 @@
-for (( i=1; i<=8; i++ )); do
+for (( i=1; i<=$1; i++ )); do
   bash request.sh & 
 done
