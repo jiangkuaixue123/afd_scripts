@@ -44,7 +44,7 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
         "afd_host":"10.248.12.142",
         "afd_port":"29521",
         "afd_extra_config":{
-            "afd_size":"4A2F"
+            "afd_size":"2A2F"
         }
     }' > ffn.log 2>&1 &
 
