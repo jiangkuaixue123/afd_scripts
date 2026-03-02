@@ -21,16 +21,17 @@ rm -rf ~/.cache/vllm/
 # export NCCL_MAX_NCHANNEL=64
 # export NCCL_BUFFSIZE=16777216
 export BATCH_SIZE=${2:-64}
-export VLLM_NCCL_SO_PATH=/home/fq9hpsac/fq9hpsacuser03/sources/nccl/build/lib/libnccl.so.2.29.3
+# export VLLM_NCCL_SO_PATH=/home/fq9hpsac/fq9hpsacuser03/sources/nccl/build/lib/libnccl.so.2.29.3
 export NCCL_GRAPH_MIXING_SUPPORT=1
 # export NCCL_P2P_NET_CHUNKSIZE=262144
-export NCCL_P2P_NET_CHUNKSIZE=524288
+# export NCCL_P2P_NET_CHUNKSIZE=524288
 # export CUDA_LAUNCH_BLOCKING=1
 export NCCL_NET_PLUGIN=none
+export NCCL_IB_DISABLE=1
 
 vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --max-num-batched-tokens $BATCH_SIZE \
-    --data-parallel-size=2 \
+    --data-parallel-size=4 \
     --enable_expert_parallel \
     --enable-dbo \
     --dbo-prefill-token-threshold 12 \
@@ -52,7 +53,7 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
         "afd_port":"29521",
         "num_afd_stages":"2",
         "afd_extra_config":{
-            "afd_size":"2A2F"
+            "afd_size":"4A2F"
         }
     }' > attn.log 2>&1 &
 
