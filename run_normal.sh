@@ -17,22 +17,21 @@ export VLLM_TORCH_PROFILER_WITH_STACK=0
 #     > normal.log 2>&1 &
 rm -rf /tmp/torchinductor_root/
 
-
+# --kv-transfer-config '{
+#         "kv_connector": "MooncakeConnector",
+#         "kv_role": "kv_consumer"
+#     }' \
 vllm serve --model="/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --data-parallel-size 2 \
     -tp 1 \
+    --port 8022 \
     --enable-expert-parallel \
 	--max-num-batched-tokens 256 \
     --no-enable-prefix-caching \
     --compilation-config '{
 		"cudagraph_mode": "FULL_DECODE_ONLY",
 		"cudagraph_capture_sizes": [256]
-	}' \
-    --kv-transfer-config '{
-        "kv_connector": "MooncakeConnector",
-        "kv_role": "kv_consumer"
-    }' \
-    > normal.log 2>&1 &
+	}' > normal.log 2>&1 &
 
 # --capture-range=cudaProfilerApi \
 #     --capture-range-end repeat \
