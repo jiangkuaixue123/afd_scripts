@@ -26,49 +26,49 @@ export NCCL_GRAPH_MIXING_SUPPORT=1
 export NCCL_NET_PLUGIN=none
 export NCCL_IB_DISABLE=1
 
-vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
-    --max-num-batched-tokens $BATCH_SIZE \
-    --data-parallel-size=2 \
-    --enable_expert_parallel \
-    --enable-dbo \
-    --dbo-prefill-token-threshold 12 \
-    --dbo-decode-token-threshold 2 \
-    --port 8022 \
-    --no-enable-prefix-caching \
-    --compilation-config '{
-		"cudagraph_mode": "FULL_DECODE_ONLY",
-		"cudagraph_capture_sizes": ['$BATCH_SIZE']
-	}' \
-    --kv-transfer-config '{
-        "kv_connector": "MooncakeConnector",
-        "kv_role": "kv_consumer"
-    }' \
-    --afd-config '{
-        "afd_connector":"p2pconnector",
-        "afd_role": "attention",
-        "afd_host":"10.248.12.142",
-        "afd_port":"29531",
-        "num_afd_stages":"2",
-        "afd_extra_config":{
-            "afd_size":"2A2F"
-        }
-    }' > attn.log 2>&1 &
-
 # vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
+#     --max-num-batched-tokens $BATCH_SIZE \
 #     --data-parallel-size=2 \
-#     --enforce-eager \
 #     --enable_expert_parallel \
 #     --enable-dbo \
 #     --dbo-prefill-token-threshold 12 \
 #     --dbo-decode-token-threshold 2 \
 #     --port 8022 \
+#     --no-enable-prefix-caching \
+#     --compilation-config '{
+# 		"cudagraph_mode": "FULL_DECODE_ONLY",
+# 		"cudagraph_capture_sizes": ['$BATCH_SIZE']
+# 	}' \
+#     --kv-transfer-config '{
+#         "kv_connector": "MooncakeConnector",
+#         "kv_role": "kv_consumer"
+#     }' \
 #     --afd-config '{
 #         "afd_connector":"p2pconnector",
 #         "afd_role": "attention",
-#         "afd_host":"127.0.0.1",
-#         "afd_port":"29521",
+#         "afd_host":"10.248.12.142",
+#         "afd_port":"29531",
 #         "num_afd_stages":"2",
 #         "afd_extra_config":{
 #             "afd_size":"2A2F"
 #         }
 #     }' > attn.log 2>&1 &
+
+vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
+    --data-parallel-size=2 \
+    --enforce-eager \
+    --enable_expert_parallel \
+    --enable-dbo \
+    --dbo-prefill-token-threshold 12 \
+    --dbo-decode-token-threshold 2 \
+    --port 8022 \
+    --afd-config '{
+        "afd_connector":"p2pconnector",
+        "afd_role": "attention",
+        "afd_host":"127.0.0.1",
+        "afd_port":"29521",
+        "num_afd_stages":"2",
+        "afd_extra_config":{
+            "afd_size":"2A2F"
+        }
+    }' > attn.log 2>&1 &
