@@ -6,12 +6,12 @@ export VLLM_TORCH_PROFILER_WITH_STACK=0
 # export CUDA_LAUNCH_BLOCKING=1
 # export VLLM_LOGGING_LEVEL=DEBUG
 
-export NCCL_DEBUG=TRACE
-export NCCL_DEBUG_SUBSYS=ALL
-# 使用 %h (hostname) 和 %p (pid) 来区分不同进程的日志
-# NCCL 原生支持 %h 和 %p，但不支持 %r (rank) 除非在特定环境下
-export NCCL_DEBUG_FILE=nccl_rank_attn_%h_%p.log
-export NCCL_DEBUG_TIMESTAMP=1
+# export NCCL_DEBUG=TRACE
+# export NCCL_DEBUG_SUBSYS=ALL
+# # 使用 %h (hostname) 和 %p (pid) 来区分不同进程的日志
+# # NCCL 原生支持 %h 和 %p，但不支持 %r (rank) 除非在特定环境下
+# export NCCL_DEBUG_FILE=nccl_rank_attn_%h_%p.log
+# export NCCL_DEBUG_TIMESTAMP=1
 # 10.248.12.106
 rm -rf /tmp/torchinductor_root/
 rm -rf ~/.cache/vllm/

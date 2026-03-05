@@ -1,19 +1,10 @@
 #!/bin/bash
 
-# export GLOO_USE_SYNC_COMM=1
-# export TORCH_DISTRIBUTED_DEBUG=DETAIL
-# export GLOO_TIMEOUT_SECS=10
-# export VLLM_LOGGING_LEVEL=DEBUG
-# export GLOO_DEBUG=1
-# export TORCH_DISTRIBUTED_DEBUG=DETAIL
-    # -dp=2 \
-
-
 export CUDA_VISIBLE_DEVICES=$1
-export NCCL_DEBUG=TRACE
-export NCCL_DEBUG_SUBSYS=ALL
-export NCCL_DEBUG_FILE=nccl_rank_ffn_%h_%p.log
-export NCCL_DEBUG_TIMESTAMP=1
+# export NCCL_DEBUG=TRACE
+# export NCCL_DEBUG_SUBSYS=ALL
+# export NCCL_DEBUG_FILE=nccl_rank_ffn_%h_%p.log
+# export NCCL_DEBUG_TIMESTAMP=1
     # --enforce_eager \
 # export TORCH_LOGS="+dynamo"
 #export NCCL_MAX_NCHANNEL=64
