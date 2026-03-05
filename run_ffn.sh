@@ -45,12 +45,9 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --port 8021 \
     --enforce_eager \
     --enable_expert_parallel \
-    --enable-dbo \
-    --dbo-prefill-token-threshold 12 \
-    --dbo-decode-token-threshold 2 \
     --afd-config '{
         "afd_connector":"p2pconnector",
-        "num_afd_stages":"2",
+        "num_afd_stages":"1",
         "afd_role": "ffn",
         "afd_host":"127.0.0.1",
         "afd_port":"29521",
