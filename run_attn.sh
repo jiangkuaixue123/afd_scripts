@@ -26,7 +26,7 @@ export NCCL_IB_DISABLE=1
 
 vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --max-num-batched-tokens $BATCH_SIZE \
-    --data-parallel-size=2 \
+    --data-parallel-size=4 \
     --enable_expert_parallel \
     --enable-dbo \
     --dbo-prefill-token-threshold 12 \
@@ -44,11 +44,11 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --afd-config '{
         "afd_connector":"p2pconnector",
         "afd_role": "attention",
-        "afd_host":"10.248.12.142",
+        "afd_host":"10.248.12.80",
         "afd_port":"29531",
         "num_afd_stages":"2",
         "afd_extra_config":{
-            "afd_size":"2A2F"
+            "afd_size":"4A2F"
         }
     }' > attn.log 2>&1 &
 
