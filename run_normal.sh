@@ -9,7 +9,7 @@ rm -rf /tmp/torchinductor_root/
 vllm serve --model="/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --data-parallel-size 8 \
     -tp 1 \
-    --profiler-config.profiler cuda \
+    --port 8022 \
     --enable-expert-parallel \
 	--max-num-batched-tokens $BATCH_SIZE \
     --no-enable-prefix-caching \
