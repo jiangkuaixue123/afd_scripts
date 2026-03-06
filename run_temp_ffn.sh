@@ -8,6 +8,4 @@ export RANK=0
 export MASTER_ADDR=10.248.12.142
 export MASTER_PORT=29500
 
-export NCCL_NET_PLUGIN=none
-
-python /home/fq9hpsac/fq9hpsacuser03/sources/vllm_jcz/examples/pynccl_p2p_cudagraph.py > temp_ffn.log 2>&1 &
+python pynccl_demo.py > temp_ffn.log 2>&1 &
