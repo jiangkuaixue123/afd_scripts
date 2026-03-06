@@ -42,7 +42,7 @@ def main():
         return
 
     # Fixed buffer shape for capture/replay (must be same on both ranks): 64*2048, bfloat16
-    shape = (640, 2048)
+    shape = (640, 1024, 1024)
     dtype = torch.bfloat16
 
     if rank == 0:
