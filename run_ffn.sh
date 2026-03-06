@@ -1,10 +1,10 @@
 #!/bin/bash
 
 export CUDA_VISIBLE_DEVICES=$1
-# export NCCL_DEBUG=TRACE
-# export NCCL_DEBUG_SUBSYS=ALL
-# export NCCL_DEBUG_FILE=nccl_rank_ffn_%h_%p.log
-# export NCCL_DEBUG_TIMESTAMP=1
+export NCCL_DEBUG=TRACE
+export NCCL_DEBUG_SUBSYS=ALL
+export NCCL_DEBUG_FILE=nccl_rank_ffn_%h_%p.log
+export NCCL_DEBUG_TIMESTAMP=1
     # --enforce_eager \
 # export TORCH_LOGS="+dynamo"
 #export NCCL_MAX_NCHANNEL=64
