@@ -7,6 +7,6 @@ export WORLD_SIZE=2
 export RANK=1
 export MASTER_ADDR=10.248.12.142
 export MASTER_PORT=29500
-export NCCL_IB_DISABLE=1
+export NCCL_IB_DISABLE=0
 
 python pynccl_demo.py > temp_attn.log 2>&1 &
