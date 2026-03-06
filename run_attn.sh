@@ -22,11 +22,11 @@ export NCCL_GRAPH_MIXING_SUPPORT=1
 # export NCCL_P2P_NET_CHUNKSIZE=262144
 # export NCCL_P2P_NET_CHUNKSIZE=524288
 # export NCCL_NET_PLUGIN=none
-export NCCL_IB_DISABLE=1
+# export NCCL_IB_DISABLE=1
 
 vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --max-num-batched-tokens $BATCH_SIZE \
-    --data-parallel-size=4 \
+    --data-parallel-size=2 \
     --enable_expert_parallel \
     --enable-dbo \
     --dbo-prefill-token-threshold 12 \
@@ -48,7 +48,7 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
         "afd_port":"29531",
         "num_afd_stages":"2",
         "afd_extra_config":{
-            "afd_size":"4A2F"
+            "afd_size":"2A2F"
         }
     }' > attn.log 2>&1 &
 
