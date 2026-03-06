@@ -88,7 +88,7 @@ def main():
     print("Both ranks: capture done")
 
     # Replay several times with random data (same seed per step for verification)
-    num_replays = 10
+    num_replays = 20
     with torch.profiler.profile(
         activities=[
             torch.profiler.ProfilerActivity.CPU,
