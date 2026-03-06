@@ -24,9 +24,6 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
 		"cudagraph_mode": "FULL_DECODE_ONLY",
 		"cudagraph_capture_sizes": [256]
 	}' \
-    --enable-dbo \
-    --dbo-prefill-token-threshold 12 \
-    --dbo-decode-token-threshold 2 \
     --port 8021 \
     --afd-config '{
         "afd_connector":"p2pconnector",

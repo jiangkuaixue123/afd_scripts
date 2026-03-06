@@ -28,9 +28,6 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --max-num-batched-tokens $BATCH_SIZE \
     --data-parallel-size=2 \
     --enable_expert_parallel \
-    --enable-dbo \
-    --dbo-prefill-token-threshold 12 \
-    --dbo-decode-token-threshold 2 \
     --port 8022 \
     --no-enable-prefix-caching \
     --compilation-config '{
