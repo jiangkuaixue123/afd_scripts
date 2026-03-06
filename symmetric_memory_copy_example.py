@@ -73,6 +73,10 @@ def main():
 
     torch.cuda.synchronize(device)
     dist.barrier()
+    if rank == 1:
+        print(f"send_buf[0,0]={send_buf} ")
+    else:
+        print(f"recv_buf[0,0]={recv_buf} ")
 
     if rank == 0:
         torch.manual_seed(42)
