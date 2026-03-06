@@ -7,7 +7,7 @@ export WORLD_SIZE=2
 export RANK=1
 export MASTER_ADDR=10.248.12.142
 export MASTER_PORT=29500
-export NCCL_IB_DISABLE=$2
+export NCCL_IB_DISABLE=1
 export NCCL_DEBUG=TRACE
 export NCCL_DEBUG_SUBSYS=ALL
 # 使用 %h (hostname) 和 %p (pid) 来区分不同进程的日志
