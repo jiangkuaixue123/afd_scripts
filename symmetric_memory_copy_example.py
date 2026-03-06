@@ -86,17 +86,20 @@ def main():
     print(f"Rank {rank}: warmup completed")
 
     # Capture CUDA graph
+    # NOTE: Only capture put_signal on rank 1. wait_signal cannot be captured
+    # because it depends on external state (signal from rank 1) that changes each step.
+    # If wait_signal is captured, it will use the signal pad state at capture time,
+    # causing data to be off by one step.
     print(f"Rank {rank}: capturing CUDA graph...")
-    graph = torch.cuda.CUDAGraph()
-    capture_stream.wait_stream(torch.cuda.current_stream(device))
-
-    with torch.cuda.graph(graph, stream=capture_stream):
-        if rank == 1:
+    if rank == 1:
+        graph = torch.cuda.CUDAGraph()
+        capture_stream.wait_stream(torch.cuda.current_stream(device))
+        with torch.cuda.graph(graph, stream=capture_stream):
             symm_mem_hdl.put_signal(dst_rank=0)
-        else:
-            symm_mem_hdl.wait_signal(src_rank=1)
+    else:
+        graph = None
 
-    print(f"Rank {rank}: CUDA graph captured")
+    print(f"Rank {rank}: CUDA graph {'captured' if rank == 1 else 'skipped (wait_signal cannot be captured)'}")
 
     torch.cuda.synchronize(device)
     dist.barrier()
@@ -125,10 +128,10 @@ def main():
                     torch.manual_seed(100 + step)
                     send_buf.copy_(torch.randn(*shape, dtype=torch.bfloat16, device=device))
                     capture_stream.wait_stream(torch.cuda.current_stream(device))
-                    graph.replay()
+                    graph.replay()  # Execute put_signal via graph
                 else:
-                    capture_stream.wait_stream(torch.cuda.current_stream(device))
-                    graph.replay()
+                    # Rank 0: wait_signal cannot be in graph, execute directly
+                    symm_mem_hdl.wait_signal(src_rank=1)
 
                 torch.cuda.synchronize(device)
                 dist.barrier()
