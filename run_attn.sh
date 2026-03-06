@@ -29,6 +29,9 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --data-parallel-size=2 \
     --enable_expert_parallel \
     --port 8022 \
+    --enable-dbo \
+    --dbo-prefill-token-threshold 12 \
+    --dbo-decode-token-threshold 2 \
     --no-enable-prefix-caching \
     --compilation-config '{
 		"cudagraph_mode": "FULL_DECODE_ONLY",
