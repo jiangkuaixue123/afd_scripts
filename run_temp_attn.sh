@@ -8,4 +8,4 @@ export RANK=1
 export MASTER_ADDR=10.248.12.142
 export MASTER_PORT=29500
 
-python symmetric_memory_copy_example.py > temp_attn.log 2>&1 &
+python pynccl_demo.py > temp_attn.log 2>&1 &

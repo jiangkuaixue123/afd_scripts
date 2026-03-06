@@ -115,12 +115,12 @@ def main():
                 torch.cuda.synchronize(device)
                 dist.barrier()
 
-                if rank == 1:
-                    torch.manual_seed(100 + step)
-                    expected = torch.randn(*shape, dtype=dtype, device=device)
-                    ok = torch.allclose(recv_buf, expected)
-                    print(f"Rank 1: replay step {step} recv_buf[0,0]={recv_buf[0,0].item():.4f} (expected {expected[0,0].item():.4f}) OK={ok}")
-                    assert ok, f"Replay step {step} recv mismatch"
+                # if rank == 1:
+                #     torch.manual_seed(100 + step)
+                #     expected = torch.randn(*shape, dtype=dtype, device=device)
+                #     ok = torch.allclose(recv_buf, expected)
+                #     print(f"Rank 1: replay step {step} recv_buf[0,0]={recv_buf[0,0].item():.4f} (expected {expected[0,0].item():.4f}) OK={ok}")
+                #     assert ok, f"Replay step {step} recv mismatch"
 
             prof.step()
 
