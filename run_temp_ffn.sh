@@ -13,4 +13,4 @@ export NCCL_DEBUG_SUBSYS=ALL
 # 使用 %h (hostname) 和 %p (pid) 来区分不同进程的日志
 # NCCL 原生支持 %h 和 %p，但不支持 %r (rank) 除非在特定环境下
 export NCCL_DEBUG_FILE=nccl_rank_ffn_%h_%p.log
-python pynccl_demo.py > temp_ffn.log 2>&1 &
+NCCL_IB_DISABLE=1 python pynccl_demo.py > temp_ffn.log 2>&1 &
