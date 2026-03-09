@@ -106,6 +106,7 @@ def main():
             attn_layer_last()
 
     # Warmup (eager run)
+    print(f"Beginning warmup on rank {rank}...")
     run_all_layers()
     torch.cuda.synchronize(device)
     dist.barrier()
