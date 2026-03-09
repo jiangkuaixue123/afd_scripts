@@ -48,6 +48,7 @@ def main():
     device = torch.device(f"cuda:{local_rank}")
 
     comm = PyNcclCommunicator(group=_get_default_group(), device=device)
+    e2a_comm = PyNcclCommunicator(group=_get_default_group(), device=device)
     if comm.disabled:
         print(f"Rank {rank}: PyNcclCommunicator disabled, exit.")
         return
@@ -75,21 +76,21 @@ def main():
 
     def attn_layer_mid():
         """ATTN rank: layers 1..25 — recv 2 from FFN then send 2 to FFN."""
-        comm.recv(recv_ubatch[0], src=FFN_RANK, stream=stream)
+        e2a_comm.recv(recv_ubatch[0], src=FFN_RANK, stream=stream)
         comm.send(send_ubatch[0], dst=FFN_RANK, stream=stream)
-        comm.recv(recv_ubatch[1], src=FFN_RANK, stream=stream)
+        e2a_comm.recv(recv_ubatch[1], src=FFN_RANK, stream=stream)
         comm.send(send_ubatch[1], dst=FFN_RANK, stream=stream)
 
     def attn_layer_last():
         """ATTN rank: layer 26 — recv 2 from FFN then send 2 (to match FFN recv=54)."""
-        comm.recv(recv_ubatch[0], src=FFN_RANK, stream=stream)
-        comm.recv(recv_ubatch[1], src=FFN_RANK, stream=stream)
+        e2a_comm.recv(recv_ubatch[0], src=FFN_RANK, stream=stream)
+        e2a_comm.recv(recv_ubatch[1], src=FFN_RANK, stream=stream)
 
     def ffn_layer():
         """FFN rank: recv then send per ubatch; layer 26 only recv (no send)."""
         for ub in range(NUM_UBATCHES):
             comm.recv(comm_buf, src=ATTN_RANK, stream=stream)
-            comm.send(comm_buf, dst=ATTN_RANK, stream=stream)
+            e2a_comm.send(comm_buf, dst=ATTN_RANK, stream=stream)
 
     def run_all_layers():
         """Execute all 27 layers (used for warmup and graph capture)."""
