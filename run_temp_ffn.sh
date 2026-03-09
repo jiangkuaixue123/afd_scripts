@@ -3,6 +3,7 @@
 
 export LOCAL_RANK=$1
 export VLLM_NCCL_SO_PATH=/home/fq9hpsac/fq9hpsacuser03/sources/nccl/build/lib/libnccl.so.2.29.3
+export NCCL_P2P_NET_CHUNKSIZE=524288
 export WORLD_SIZE=2
 export RANK=0
 export MASTER_ADDR=10.248.12.142
