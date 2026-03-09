@@ -73,37 +73,34 @@ def main():
         comm.send(send_ubatch[0], dst=FFN_RANK, stream=stream)
         comm.send(send_ubatch[1], dst=FFN_RANK, stream=stream)
 
-    def attn_layer_mid(layer_idx):
+    def attn_layer_mid():
         """ATTN rank: layers 1..25 — recv 2 from FFN then send 2 to FFN."""
         comm.recv(recv_ubatch[0], src=FFN_RANK, stream=stream)
-        comm.recv(recv_ubatch[1], src=FFN_RANK, stream=stream)
         comm.send(send_ubatch[0], dst=FFN_RANK, stream=stream)
+        comm.recv(recv_ubatch[1], src=FFN_RANK, stream=stream)
         comm.send(send_ubatch[1], dst=FFN_RANK, stream=stream)
 
     def attn_layer_last():
         """ATTN rank: layer 26 — recv 2 from FFN then send 2 (to match FFN recv=54)."""
         comm.recv(recv_ubatch[0], src=FFN_RANK, stream=stream)
         comm.recv(recv_ubatch[1], src=FFN_RANK, stream=stream)
-        comm.send(send_ubatch[0], dst=FFN_RANK, stream=stream)
-        comm.send(send_ubatch[1], dst=FFN_RANK, stream=stream)
 
-    def ffn_layer(layer_idx):
+    def ffn_layer():
         """FFN rank: recv then send per ubatch; layer 26 only recv (no send)."""
         for ub in range(NUM_UBATCHES):
             comm.recv(comm_buf, src=ATTN_RANK, stream=stream)
-            if layer_idx < NUM_LAYERS - 1:
-                comm.send(comm_buf, dst=ATTN_RANK, stream=stream)
+            comm.send(comm_buf, dst=ATTN_RANK, stream=stream)
 
     def run_all_layers():
         """Execute all 27 layers (used for warmup and graph capture)."""
         for layer_idx in range(NUM_LAYERS):
             if rank == FFN_RANK:
-                ffn_layer(layer_idx)
+                ffn_layer()
             else:
                 if layer_idx == 0:
                     attn_layer_0()
-                elif layer_idx < NUM_LAYERS - 1:
-                    attn_layer_mid(layer_idx)
+                else:
+                    attn_layer_mid()
         if rank == ATTN_RANK:
             attn_layer_last()
 
