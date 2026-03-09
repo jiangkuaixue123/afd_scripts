@@ -130,6 +130,7 @@ def main():
         print(f"jcz after replay {step}")
         dist.barrier()
     print(f"Rank {rank}: AF simulation {NUM_LAYERS} layers, {num_replays} replays OK")
+    sleep(5)  # for better visibility of print statements before process exit
     dist.destroy_process_group()
 
 
