@@ -171,14 +171,14 @@ def main():
     # print(f"Rank {rank}: graph (single buffer) captured")
 
     # Replay
-    num_replays = 4
-    for step in range(num_replays):
-        # capture_stream.wait_stream(torch.cuda.current_stream(device))
-        graph.replay()
-        torch.cuda.synchronize(device)
-        print(f"jcz after replay {step}")
-        dist.barrier()
-    print(f"Rank {rank}: AF simulation {NUM_LAYERS} layers, {num_replays} replays OK")
+    # num_replays = 4
+    # for step in range(num_replays):
+    #     # capture_stream.wait_stream(torch.cuda.current_stream(device))
+    #     graph.replay()
+    #     torch.cuda.synchronize(device)
+    #     print(f"jcz after replay {step}")
+    #     dist.barrier()
+    # print(f"Rank {rank}: AF simulation {NUM_LAYERS} layers, {num_replays} replays OK")
 
     # num_single_replays = 4
     # for step in range(num_single_replays):
