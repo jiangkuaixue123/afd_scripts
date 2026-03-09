@@ -23,6 +23,7 @@ export NCCL_GRAPH_MIXING_SUPPORT=1
 export NCCL_P2P_NET_CHUNKSIZE=524288
 export NCCL_NET_PLUGIN=none
 # export NCCL_IB_DISABLE=1
+export NCCL_SET_THREAD_NAME=1
 
 vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --max-num-batched-tokens $BATCH_SIZE \
