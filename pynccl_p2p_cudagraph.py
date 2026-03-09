@@ -152,10 +152,10 @@ def main():
     print(f"Rank {rank}: warmup OK")
 
     # CUDA graph capture
-    capture_stream = torch.cuda.Stream(device=device)
+    # capture_stream = torch.cuda.Stream(device=device)
     graph = torch.cuda.CUDAGraph()
-    capture_stream.wait_stream(torch.cuda.current_stream(device))
-    with torch.cuda.graph(graph, stream=capture_stream):
+    # capture_stream.wait_stream(torch.cuda.current_stream(device))
+    with torch.cuda.graph(graph, stream=torch.cuda.current_stream(device)):
         run_all_layers()
     torch.cuda.synchronize(device)
     dist.barrier()
@@ -173,7 +173,7 @@ def main():
     # Replay
     num_replays = 4
     for step in range(num_replays):
-        capture_stream.wait_stream(torch.cuda.current_stream(device))
+        # capture_stream.wait_stream(torch.cuda.current_stream(device))
         graph.replay()
         torch.cuda.synchronize(device)
         print(f"jcz after replay {step}")
