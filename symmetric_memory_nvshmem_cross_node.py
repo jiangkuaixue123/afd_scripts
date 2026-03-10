@@ -101,8 +101,9 @@ def nvshmem_put_signal_kernel(
     nvshmem.put(dest_ptr, src_ptr, nelems, peer)
     # Ensure the put is complete before signaling
     nvshmem.quiet()
-    # Write signal to notify the remote peer
-    nvshmem.put(signal_ptr, signal_val, 1, peer)
+    # Use signal_op to set the signal value on remote peer
+    # NVSHMEM_SIGNAL_SET = 0 (set signal to the given value)
+    nvshmem.signal_op(signal_ptr, signal_val, 0, peer)
 
 
 @requires_nvshmem
