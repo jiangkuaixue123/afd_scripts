@@ -105,45 +105,6 @@ def main():
         if rank == ATTN_RANK:
             attn_layer_last()
 
-    # # ========== Single buffer version (no ubatch split) ==========
-    # # Additional buffers for single-buffer mode
-    # if rank == FFN_RANK:
-    #     single_comm_buf = torch.empty(SHAPE, dtype=DTYPE, device=device)
-    # else:
-    #     single_send_buf = torch.zeros(SHAPE, dtype=DTYPE, device=device)
-    #     single_recv_buf = torch.empty(SHAPE, dtype=DTYPE, device=device)
-
-    # def attn_layer_0_single():
-    #     """ATTN rank: layer 0 — send 1 to FFN (single buffer)."""
-    #     comm.send(single_send_buf, dst=FFN_RANK, stream=stream)
-
-    # def attn_layer_mid_single():
-    #     """ATTN rank: layers 1..25 — recv 1 from FFN then send 1 to FFN (single buffer)."""
-    #     e2a_comm.recv(single_recv_buf, src=FFN_RANK, stream=stream)
-    #     comm.send(single_send_buf, dst=FFN_RANK, stream=stream)
-
-    # def attn_layer_last_single():
-    #     """ATTN rank: layer 26 — recv 1 from FFN (single buffer)."""
-    #     e2a_comm.recv(single_recv_buf, src=FFN_RANK, stream=stream)
-
-    # def ffn_layer_single():
-    #     """FFN rank: recv 1 then send 1 (single buffer)."""
-    #     comm.recv(single_comm_buf, src=ATTN_RANK, stream=stream)
-    #     e2a_comm.send(single_comm_buf, dst=ATTN_RANK, stream=stream)
-
-    # def run_all_layers_single():
-    #     """Execute all 27 layers with single buffer (no ubatch split)."""
-    #     for layer_idx in range(NUM_LAYERS):
-    #         if rank == FFN_RANK:
-    #             ffn_layer_single()
-    #         else:
-    #             if layer_idx == 0:
-    #                 attn_layer_0_single()
-    #             else:
-    #                 attn_layer_mid_single()
-    #     if rank == ATTN_RANK:
-    #         attn_layer_last_single()
-
     # Warmup (eager run)
     print(f"Beginning warmup on rank {rank}...")
     run_all_layers()
@@ -152,42 +113,25 @@ def main():
     print(f"Rank {rank}: warmup OK")
 
     # CUDA graph capture
-    # capture_stream = torch.cuda.Stream(device=device)
     graph = torch.cuda.CUDAGraph()
-    # capture_stream.wait_stream(torch.cuda.current_stream(device))
-    with torch.cuda.graph(graph, stream=torch.cuda.current_stream(device)):
+    capture_stream = torch.cuda.Stream(device=device)
+    capture_stream.wait_stream(torch.cuda.current_stream(device))
+    with torch.cuda.graph(graph, stream=capture_stream):
+    # with torch.cuda.graph(graph, stream=torch.cuda.current_stream(device)):
         run_all_layers()
     torch.cuda.synchronize(device)
     dist.barrier()
     print(f"Rank {rank}: graph captured")
 
-    # # CUDA graph capture
-    # single_graph = torch.cuda.CUDAGraph()
-    # capture_stream.wait_stream(torch.cuda.current_stream(device))
-    # with torch.cuda.graph(single_graph, stream=capture_stream):
-    #     run_all_layers_single()
-    # torch.cuda.synchronize(device)
-    # dist.barrier()
-    # print(f"Rank {rank}: graph (single buffer) captured")
-
     # Replay
-    # num_replays = 4
-    # for step in range(num_replays):
-    #     # capture_stream.wait_stream(torch.cuda.current_stream(device))
-    #     graph.replay()
-    #     torch.cuda.synchronize(device)
-    #     print(f"jcz after replay {step}")
-    #     dist.barrier()
-    # print(f"Rank {rank}: AF simulation {NUM_LAYERS} layers, {num_replays} replays OK")
-
-    # num_single_replays = 4
-    # for step in range(num_single_replays):
-    #     capture_stream.wait_stream(torch.cuda.current_stream(device))
-    #     single_graph.replay()
-    #     torch.cuda.synchronize(device)
-    #     dist.barrier()
-
-    # print(f"Rank {rank}: Single buffer mode {NUM_LAYERS} layers, {num_single_replays} replays OK")
+    num_replays = 4
+    for step in range(num_replays):
+        capture_stream.wait_stream(torch.cuda.current_stream(device))
+        graph.replay()
+        torch.cuda.synchronize(device)
+        print(f"jcz after replay {step}")
+        dist.barrier()
+    print(f"Rank {rank}: AF simulation {NUM_LAYERS} layers, {num_replays} replays OK")
 
     import time
     time.sleep(5)  # for better visibility of print statements before process exit
