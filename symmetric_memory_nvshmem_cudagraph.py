@@ -77,16 +77,19 @@ def spin_wait_kernel(
     - It's just a GPU kernel with memory loads
     - No CPU synchronization involved
     - No external NVSHMEM wait APIs
+    - No 'break' statements (not supported in Triton)
     """
     signal_addr = signal_ptr.to(tl.pointer_type(tl.int64))
 
-    # Spin-wait loop
-    while True:
-        current_val = tl.load(signal_addr)
-        if current_val == expected_val:
-            break
-        # 可选：添加 nanosleep 减少 bus traffic
+    # Spin-wait loop without using 'break'
+    # Load initial value
+    current_val = tl.load(signal_addr)
+
+    # Keep polling until signal arrives
+    while current_val != expected_val:
+        # Optional: add nanosleep to reduce bus traffic
         tl.nanosleep(100)  # 100ns
+        current_val = tl.load(signal_addr)
 
 
 @requires_nvshmem
