@@ -32,6 +32,11 @@ def main():
     torch.cuda.set_device(local_rank)
     device = torch.device(f"cuda:{local_rank}")
 
+    if symm_mem.is_nvshmem_available():
+        symm_mem.set_backend("NVSHMEM")
+    else:
+        raise RuntimeError("NVSHMEM backend not available. Please install nvidia-nvshmem-cu12")
+
     # Enable symmetric memory for the world group
     group_name = dist.group.WORLD.group_name
     symm_mem.enable_symm_mem_for_group(group_name)
