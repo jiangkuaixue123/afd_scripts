@@ -33,7 +33,7 @@ def main():
     device = torch.device(f"cuda:{local_rank}")
 
     if symm_mem.is_nvshmem_available():
-        symm_mem.set_backend("NVSHMEM")
+        symm_mem.set_backend("NCCL")
     else:
         raise RuntimeError("NVSHMEM backend not available. Please install nvidia-nvshmem-cu12")
 
