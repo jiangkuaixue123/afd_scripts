@@ -155,8 +155,14 @@ def main():
 
     print(f"[Rank {rank}] Initializing NVSHMEM backend...")
 
-    # Set NVSHMEM as the symmetric memory backend
-    symm_mem.set_backend("NVSHMEM")
+    if symm_mem.is_nvshmem_available():
+        symm_mem.set_backend("NCCL")
+    else:
+        raise RuntimeError("NVSHMEM backend not available. Please install nvidia-nvshmem-cu12")
+
+    # Enable symmetric memory for the world group
+    group_name = dist.group.WORLD.group_name
+    symm_mem.enable_symm_mem_for_group(group_name)
 
     # Configuration
     shape = (64, 2048)  # Data shape
