@@ -148,10 +148,13 @@ def main():
     world_size = int(os.environ["WORLD_SIZE"])
     assert world_size == 2, "This example expects exactly 2 ranks"
 
-    # Initialize process group
-    dist.init_process_group(backend="nccl")
-    torch.cuda.set_device(local_rank)
+    # Initialize process group with device_id to avoid warnings
     device = torch.device(f"cuda:{local_rank}")
+    torch.cuda.set_device(device)
+    dist.init_process_group(
+        backend="nccl",
+        device_id=device,
+    )
 
     print(f"[Rank {rank}] Initializing NVSHMEM backend...")
 
@@ -197,7 +200,7 @@ def main():
     # =========================================================================
     print(f"\n[Rank {rank}] === Example 1: One-sided PUT ===")
 
-    # dist.barrier()
+    dist.barrier()
 
     if rank == 1:
         # Sender: push data to rank 0 using NVSHMEM put
