@@ -103,7 +103,8 @@ def nvshmem_put_signal_kernel(
     nvshmem.quiet()
     # Use signal_op to set the signal value on remote peer
     # NVSHMEM_SIGNAL_SET = 0 (set signal to the given value)
-    nvshmem.signal_op(signal_ptr, signal_val, 0, peer)
+    # signal_op expects int64 address
+    nvshmem.signal_op(signal_ptr.to(tl.int64), signal_val, 0, peer)
 
 
 @requires_nvshmem
