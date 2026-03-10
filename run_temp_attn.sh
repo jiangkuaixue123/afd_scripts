@@ -15,4 +15,4 @@ export NCCL_NET_PLUGIN=none
 # # 使用 %h (hostname) 和 %p (pid) 来区分不同进程的日志
 # # NCCL 原生支持 %h 和 %p，但不支持 %r (rank) 除非在特定环境下
 # export NCCL_DEBUG_FILE=nccl_rank_attn_%h_%p.log
-python pynccl_p2p_cudagraph.py > temp_attn.log 2>&1 &
+python symmetric_memory_copy_example.py > temp_attn.log 2>&1 &
