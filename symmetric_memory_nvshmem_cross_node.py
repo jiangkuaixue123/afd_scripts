@@ -171,9 +171,8 @@ def main():
     signal_buffer = symm_mem.empty(1, dtype=torch.int64, device=device)
 
     # Rendezvous to establish symmetric memory mappings
-    group_name = dist.group.WORLD.group_name
-    symm_mem.rendezvous(data_buffer, group=group_name)
-    symm_mem.rendezvous(signal_buffer, group=group_name)
+    symm_mem.rendezvous(data_buffer, group=dist.group.WORLD)
+    symm_mem.rendezvous(signal_buffer, group=dist.group.WORLD)
 
     print(f"[Rank {rank}] Symmetric memory rendezvous completed")
 
