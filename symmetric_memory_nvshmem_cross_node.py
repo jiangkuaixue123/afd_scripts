@@ -197,7 +197,7 @@ def main():
     # =========================================================================
     print(f"\n[Rank {rank}] === Example 1: One-sided PUT ===")
 
-    dist.barrier()
+    # dist.barrier()
 
     if rank == 1:
         # Sender: push data to rank 0 using NVSHMEM put
@@ -208,6 +208,7 @@ def main():
             nelems,
             0,  # Target peer: rank 0
         )
+        print(f"[Rank {rank}] Sending data to rank 0 using NVSHMEM put finish")
 
     # Wait for transfer to complete
     dist.barrier()
