@@ -358,6 +358,118 @@ def main():
     dist.barrier()
     print(f"\n[Rank {rank}] All examples completed!")
 
+    # =========================================================================
+    # Example 5: CUDA Graph with putmem_signal_block
+    # =========================================================================
+    # CUDA Graph can capture NVSHMEM put operations, but NOT wait operations.
+    # Pattern:
+    #   - Sender (Rank 1): Capture putmem_signal_block in CUDA graph
+    #   - Receiver (Rank 0): wait_signal is OUTSIDE the graph
+    # =========================================================================
+    print(f"\n[Rank {rank}] === Example 5: CUDA Graph with putmem_signal_block ===")
+
+    # Reset
+    if rank == 1:
+        torch.manual_seed(400 + rank)
+        data_buffer.copy_(torch.randn(*shape, dtype=dtype, device=device).flatten())
+    if rank == 0:
+        data_buffer.zero_()
+    signal_buffer.zero_()
+
+    dist.barrier()
+
+    # Warmup: run once to ensure kernel is compiled before capturing
+    if rank == 1:
+        print(f"[Rank {rank}] Warmup run before CUDA graph capture...")
+        nbytes = nelems * data_buffer.element_size()
+        nvshmem_putmem_signal_block_kernel[(1,)](
+            data_buffer,  # Destination (on rank 0)
+            data_buffer,  # Source (local)
+            nbytes,
+            signal_buffer,
+            1,  # Warmup signal value
+            0,  # SET
+            0,  # Target peer
+        )
+        torch.cuda.synchronize()
+
+    if rank == 0:
+        print(f"[Rank {rank}] Warmup wait...")
+        nvshmem_wait_signal_kernel[(1,)](signal_buffer, 1)
+        torch.cuda.synchronize()
+
+    dist.barrier()
+    print(f"[Rank {rank}] Warmup completed")
+
+    # Reset for actual test
+    if rank == 1:
+        torch.manual_seed(400 + rank)
+        data_buffer.copy_(torch.randn(*shape, dtype=dtype, device=device).flatten())
+    if rank == 0:
+        data_buffer.zero_()
+    signal_buffer.zero_()
+
+    dist.barrier()
+
+    # Capture CUDA graph on sender side
+    if rank == 1:
+        print(f"[Rank {rank}] Capturing CUDA graph...")
+        graph = torch.cuda.CUDAGraph()
+        nbytes = nelems * data_buffer.element_size()
+
+        # Capture the putmem_signal_block operation
+        with torch.cuda.graph(graph):
+            nvshmem_putmem_signal_block_kernel[(1,)](
+                data_buffer,
+                data_buffer,
+                nbytes,
+                signal_buffer,
+                55555,  # Signal value for graph replay
+                0,  # SET
+                0,  # Target peer: rank 0
+            )
+        print(f"[Rank {rank}] CUDA graph captured successfully!")
+
+    dist.barrier()
+
+    # Replay the graph
+    num_replays = 3
+    for step in range(num_replays):
+        # Reset signal for each iteration (receiver needs to wait again)
+        if rank == 0:
+            signal_buffer.zero_()
+            data_buffer.zero_()
+
+        # Update data on sender side
+        if rank == 1:
+            torch.manual_seed(400 + rank + step * 100)
+            data_buffer.copy_(torch.randn(*shape, dtype=dtype, device=device).flatten())
+
+        dist.barrier()
+
+        if rank == 1:
+            # Replay the captured graph
+            print(f"[Rank {rank}] Replaying graph step {step}...")
+            graph.replay()
+            print(f"[Rank {rank}] Graph replay step {step} done")
+
+        if rank == 0:
+            # Wait for signal (OUTSIDE graph - cannot be captured)
+            nvshmem_wait_signal_kernel[(1,)](signal_buffer, 55555)
+
+            # Verify data
+            torch.manual_seed(401 + step * 100)
+            expected = torch.randn(*shape, dtype=dtype, device=device).flatten()
+            if torch.allclose(data_buffer, expected, rtol=1e-2, atol=1e-2):
+                print(f"[Rank {rank}] Step {step} PASSED!")
+            else:
+                max_diff = (data_buffer - expected).abs().max().item()
+                print(f"[Rank {rank}] Step {step} FAILED: max_diff={max_diff}")
+
+        dist.barrier()
+
+    print(f"\n[Rank {rank}] Example 5 (CUDA Graph) completed!")
+
     dist.destroy_process_group()
 
 
