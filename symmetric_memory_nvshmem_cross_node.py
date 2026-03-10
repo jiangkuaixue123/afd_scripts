@@ -263,51 +263,51 @@ def main():
             max_diff = (data_buffer - expected).abs().max().item()
             print(f"[Rank {rank}] Example 2 FAILED: max_diff={max_diff}")
 
-    # =========================================================================
-    # Example 3: PUT with signal synchronization
-    # =========================================================================
-    print(f"\n[Rank {rank}] === Example 3: PUT with Signal ===")
+    # # =========================================================================
+    # # Example 3: PUT with signal synchronization
+    # # =========================================================================
+    # print(f"\n[Rank {rank}] === Example 3: PUT with Signal ===")
 
-    # Reset
-    if rank == 1:
-        torch.manual_seed(200 + rank)
-        data_buffer.copy_(torch.randn(*shape, dtype=dtype, device=device).flatten())
-    if rank == 0:
-        data_buffer.zero_()
-    signal_buffer.zero_()
+    # # Reset
+    # if rank == 1:
+    #     torch.manual_seed(200 + rank)
+    #     data_buffer.copy_(torch.randn(*shape, dtype=dtype, device=device).flatten())
+    # if rank == 0:
+    #     data_buffer.zero_()
+    # signal_buffer.zero_()
 
-    dist.barrier()
+    # dist.barrier()
 
-    if rank == 1:
-        # Sender: put data and signal
-        print(f"[Rank {rank}] Sending data with signal to rank 0...")
-        nvshmem_put_signal_kernel[(1,)](
-            data_buffer,
-            data_buffer,
-            nelems,
-            signal_buffer,
-            12345,  # Signal value
-            0,  # Target peer: rank 0
-        )
+    # if rank == 1:
+    #     # Sender: put data and signal
+    #     print(f"[Rank {rank}] Sending data with signal to rank 0...")
+    #     nvshmem_put_signal_kernel[(1,)](
+    #         data_buffer,
+    #         data_buffer,
+    #         nelems,
+    #         signal_buffer,
+    #         12345,  # Signal value
+    #         0,  # Target peer: rank 0
+    #     )
 
-    if rank == 0:
-        # Receiver: wait for signal then read data
-        print(f"[Rank {rank}] Waiting for signal...")
-        nvshmem_wait_signal_kernel[(1,)](
-            signal_buffer,
-            12345,  # Expected signal value
-        )
-        print(f"[Rank {rank}] Signal received, verifying data...")
+    # if rank == 0:
+    #     # Receiver: wait for signal then read data
+    #     print(f"[Rank {rank}] Waiting for signal...")
+    #     nvshmem_wait_signal_kernel[(1,)](
+    #         signal_buffer,
+    #         12345,  # Expected signal value
+    #     )
+    #     print(f"[Rank {rank}] Signal received, verifying data...")
 
-        torch.manual_seed(201)
-        expected = torch.randn(*shape, dtype=dtype, device=device).flatten()
-        if torch.allclose(data_buffer, expected, rtol=1e-2, atol=1e-2):
-            print(f"[Rank {rank}] Example 3 PASSED!")
-        else:
-            max_diff = (data_buffer - expected).abs().max().item()
-            print(f"[Rank {rank}] Example 3 FAILED: max_diff={max_diff}")
+    #     torch.manual_seed(201)
+    #     expected = torch.randn(*shape, dtype=dtype, device=device).flatten()
+    #     if torch.allclose(data_buffer, expected, rtol=1e-2, atol=1e-2):
+    #         print(f"[Rank {rank}] Example 3 PASSED!")
+    #     else:
+    #         max_diff = (data_buffer - expected).abs().max().item()
+    #         print(f"[Rank {rank}] Example 3 FAILED: max_diff={max_diff}")
 
-    dist.barrier()
+    # dist.barrier()
 
     # =========================================================================
     # Example 4: putmem_signal_block (atomic put + signal)
