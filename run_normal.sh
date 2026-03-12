@@ -7,7 +7,7 @@ export BATCH_SIZE=${2:-64}
 rm -rf /tmp/torchinductor_root/
 
 vllm serve --model="/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
-    --data-parallel-size 8 \
+    --data-parallel-size 2 \
     -tp 1 \
     --port 8022 \
     --enable-expert-parallel \
@@ -18,8 +18,12 @@ vllm serve --model="/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
 		"cudagraph_capture_sizes": ['$BATCH_SIZE']
 	}' \
     --kv-transfer-config '{
-        "kv_connector": "MooncakeConnector",
-        "kv_role": "kv_consumer"
+        "kv_connector": "DecodeBenchConnector",
+        "kv_role": "kv_both",
+        "kv_connector_extra_config": {
+            "fill_mean": 0.015,
+            "fill_std": 0.0
+        }
     }' \
     > normal.log 2>&1 &
 
