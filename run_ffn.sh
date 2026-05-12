@@ -1,11 +1,10 @@
 #!/bin/bash
 
 export CUDA_VISIBLE_DEVICES=$1
-export NCCL_DEBUG=TRACE
-export NCCL_DEBUG_SUBSYS=ALL
-export NCCL_DEBUG_FILE=nccl_rank_ffn_%h_%p.log
-export NCCL_DEBUG_TIMESTAMP=1
-    # --enforce_eager \
+# export NCCL_DEBUG=TRACE
+# export NCCL_DEBUG_SUBSYS=ALL
+# export NCCL_DEBUG_FILE=nccl_rank_ffn_%h_%p.log
+# export NCCL_DEBUG_TIMESTAMP=1
 # export TORCH_LOGS="+dynamo"
 #export NCCL_MAX_NCHANNEL=64
 #export NCCL_BUFFSIZE=16777216
@@ -16,10 +15,10 @@ export NCCL_P2P_NET_CHUNKSIZE=524288
 # export CUDA_LAUNCH_BLOCKING=1
 export NCCL_NET_PLUGIN=none
 export NCCL_IB_DISABLE=1
-export NCCL_SET_THREAD_NAME=1
+# export NCCL_SET_THREAD_NAME=1
 
-vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
-    -dp=2 \
+vllm serve "/home/jcz/deepseek-v2-lite" \
+    -dp=1 \
     --enable_expert_parallel \
     --compilation-config '{
 		"cudagraph_mode": "FULL_DECODE_ONLY",
@@ -33,10 +32,9 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
         "afd_connector":"p2pconnector",
         "num_afd_stages":"2",
         "afd_role": "ffn",
-        "afd_host":"10.248.12.142",
         "afd_port":"29531",
         "afd_extra_config":{
-            "afd_size":"2A2F"
+            "afd_size":"2A1F"
         }
     }' > ffn.log 2>&1 &
 

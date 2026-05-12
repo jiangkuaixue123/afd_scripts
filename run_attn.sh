@@ -4,12 +4,12 @@ export CUDA_VISIBLE_DEVICES=$1
 # export CUDA_LAUNCH_BLOCKING=1
 # export VLLM_LOGGING_LEVEL=DEBUG
 
-export NCCL_DEBUG=TRACE
-export NCCL_DEBUG_SUBSYS=ALL
-# 使用 %h (hostname) 和 %p (pid) 来区分不同进程的日志
-# NCCL 原生支持 %h 和 %p，但不支持 %r (rank) 除非在特定环境下
-export NCCL_DEBUG_FILE=nccl_rank_attn_%h_%p.log
-export NCCL_DEBUG_TIMESTAMP=1
+# export NCCL_DEBUG=TRACE
+# export NCCL_DEBUG_SUBSYS=ALL
+# # 使用 %h (hostname) 和 %p (pid) 来区分不同进程的日志
+# # NCCL 原生支持 %h 和 %p，但不支持 %r (rank) 除非在特定环境下
+# export NCCL_DEBUG_FILE=nccl_rank_attn_%h_%p.log
+# export NCCL_DEBUG_TIMESTAMP=1
 # 10.248.12.106
 rm -rf /tmp/torchinductor_root/
 rm -rf ~/.cache/vllm/
@@ -23,9 +23,8 @@ export NCCL_GRAPH_MIXING_SUPPORT=1
 export NCCL_P2P_NET_CHUNKSIZE=524288
 export NCCL_NET_PLUGIN=none
 export NCCL_IB_DISABLE=1
-export NCCL_SET_THREAD_NAME=1
 
-vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
+vllm serve "/home/jcz/deepseek-v2-lite" \
     --max-num-batched-tokens $BATCH_SIZE \
     --data-parallel-size=2 \
     --enable_expert_parallel \
@@ -45,11 +44,10 @@ vllm serve "/home/fq9hpsac/fq9hpsacuser03/deepseek-v2-lite" \
     --afd-config '{
         "afd_connector":"p2pconnector",
         "afd_role": "attention",
-        "afd_host":"10.248.12.142",
         "afd_port":"29531",
         "num_afd_stages":"2",
         "afd_extra_config":{
-            "afd_size":"2A2F"
+            "afd_size":"2A1F"
         }
     }' > attn.log 2>&1 &
 
