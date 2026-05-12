@@ -18,11 +18,10 @@ rm -rf ~/.cache/vllm/
 
 export BATCH_SIZE=${2:-64}
 # export VLLM_NCCL_SO_PATH=/home/fq9hpsac/fq9hpsacuser03/sources/nccl/build/lib/libnccl.so.2.29.3
-export NCCL_GRAPH_MIXING_SUPPORT=1
-# export NCCL_P2P_NET_CHUNKSIZE=262144
-export NCCL_P2P_NET_CHUNKSIZE=524288
-export NCCL_NET_PLUGIN=none
-export NCCL_IB_DISABLE=1
+# export NCCL_GRAPH_MIXING_SUPPORT=1
+# export NCCL_P2P_NET_CHUNKSIZE=524288
+# export NCCL_NET_PLUGIN=none
+# export NCCL_IB_DISABLE=1
 
 vllm serve "/home/jcz/deepseek-v2-lite" \
     --max-num-batched-tokens $BATCH_SIZE \
@@ -39,8 +38,8 @@ vllm serve "/home/jcz/deepseek-v2-lite" \
 		"cudagraph_capture_sizes": ['$BATCH_SIZE']
 	}' \
     --kv-transfer-config '{
-        "kv_connector": "MooncakeConnector",
-        "kv_role": "kv_consumer"
+        "kv_connector": "DecodeBenchConnector",
+        "kv_role": "kv_both"
     }' \
     --afd-config '{
         "afd_connector":"p2pconnector",
