@@ -29,6 +29,7 @@ vllm serve "/home/jcz/deepseek-v2-lite" \
     --data-parallel-size=2 \
     --enable_expert_parallel \
     --port 8022 \
+    --enforce-eager \
     --enable-dbo \
     --dbo-prefill-token-threshold 12 \
     --dbo-decode-token-threshold 2 \
